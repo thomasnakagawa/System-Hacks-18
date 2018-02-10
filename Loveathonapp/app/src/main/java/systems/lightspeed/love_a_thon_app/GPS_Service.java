@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -69,7 +70,7 @@ public class GPS_Service extends Service implements LocationListener{
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
                     //noinspection MissingPermission
-                    mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 0, this);
+                    mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 0, this, Looper.getMainLooper() );
                     Log.d("Network", "Network");
                     if (mlocationManager != null) {
                         //noinspection MissingPermission
