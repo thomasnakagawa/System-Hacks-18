@@ -26,6 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
 
     String timer[]={"Select time","5 sec","10 sec","15 sec","20 sec","30 sec"};
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
 //      permission check
         if(!runtime_permission())
-            enable_button();
+         //   enable_button();
         runtime_permission();
 
         listenForPartner("MyPartner");
@@ -120,15 +123,15 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter arrayAdapterCity = new ArrayAdapter(this,android.R.layout.simple_spinner_dropdown_item,timer);
         arrayAdapterCity.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinTime.setAdapter(arrayAdapterCity);
+    //    updateDisplay();
     }
+    private void updateDisplay() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
 
-    private void enable_button() {
-
-        mLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-                gps = new GPS_Service(MainActivity.this,tim);
+            public void run() {
+                 gps = new GPS_Service(MainActivity.this,tim);
                 startService(new Intent(MainActivity.this,GPS_Service.class));
 
                 if(gps.canGetLocation()){
@@ -143,11 +146,24 @@ public class MainActivity extends AppCompatActivity {
                     gps.showSettingsAlert();
                 }
             }
-        });
 
-
-
+        },0,1000);//Update text every second
     }
+//                gps = new GPS_Service(MainActivity.this,tim);
+//                startService(new Intent(MainActivity.this,GPS_Service.class));
+//
+//                if(gps.canGetLocation()){
+//                    double latitude = gps.getLatitude();
+//                    double longitude = gps.getLongitude();
+//                    mylatitude = latitude;
+//                    mylongitude = longitude;
+//                    storeInDatabase(latitude,longitude);
+//                    mText.setText(latitude+" ::: "+longitude);
+//                    Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
+//                }else{
+//                    gps.showSettingsAlert();
+//                }
+
 
     private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
         double percentage;
@@ -189,7 +205,8 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode==123){
             if(grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){
-                enable_button();
+              //  enable_button();
+             //   updateDisplay();
             }else{
                 runtime_permission();
             }
