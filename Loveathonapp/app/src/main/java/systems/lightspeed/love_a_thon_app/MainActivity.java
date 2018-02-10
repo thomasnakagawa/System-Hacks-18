@@ -30,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     TextView mText;
     GPS_Service gps;
@@ -73,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mText = (TextView) findViewById(R.id.location_tv);
-        mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child("User 1");
+
+        Button button = (Button) findViewById(R.id.start_button);
+        button.setOnClickListener(this);
     }
 
 
@@ -92,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
                     mylatitude = latitude;
                     mylongitude = longitude;
                     storeInDatabase(latitude,longitude);
-                    mText.setText(latitude+" ::: "+longitude);
-                    Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
+                    //mText.setText(latitude+" ::: "+longitude);
+                    //Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
                 }else{
                     gps.showSettingsAlert();
                 }
@@ -104,15 +106,6 @@ public class MainActivity extends AppCompatActivity {
         runtime_permission();
 
         listenForPartner("MyPartner");
-
-        Button button = (Button) findViewById(R.id.start_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String userName = ((EditText)findViewById(R.id.userName_textEdit)).getText().toString();
-                String partnerName = ((EditText)findViewById(R.id.partnerName_textEdit)).getText().toString();
-                System.out.println(userName + partnerName);
-            }
-        });
     }
 //                gps = new GPS_Service(MainActivity.this,tim);
 //                startService(new Intent(MainActivity.this,GPS_Service.class));
@@ -172,5 +165,16 @@ public class MainActivity extends AppCompatActivity {
             runtime_permission();
 
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        String userName = ((EditText)findViewById(R.id.userName_textEdit)).getText().toString();
+        String partnerName = ((EditText)findViewById(R.id.partnerName_textEdit)).getText().toString();
+        System.out.println(userName + partnerName);
+
+        mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child(userName);
+        updateDisplay();
+        listenForPartner(partnerName);
     }
 }
