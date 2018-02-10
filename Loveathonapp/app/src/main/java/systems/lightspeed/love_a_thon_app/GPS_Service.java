@@ -40,7 +40,6 @@ public class GPS_Service extends Service implements LocationListener{
     }
     public GPS_Service(Context mContext, String time){
         this.mContext=mContext;
-        this.time= Integer.parseInt(time);
         getLocation();
     }
 

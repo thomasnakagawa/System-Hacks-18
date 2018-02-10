@@ -27,6 +27,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView mText;
@@ -71,6 +74,32 @@ public class MainActivity extends AppCompatActivity {
 
         mText = (TextView) findViewById(R.id.location_tv);
         mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child("User 1");
+    }
+
+
+    private void updateDisplay() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                 gps = new GPS_Service(MainActivity.this, "1");
+                startService(new Intent(MainActivity.this,GPS_Service.class));
+
+                if(gps.canGetLocation()){
+                    double latitude = gps.getLatitude();
+                    double longitude = gps.getLongitude();
+                    mylatitude = latitude;
+                    mylongitude = longitude;
+                    storeInDatabase(latitude,longitude);
+                    mText.setText(latitude+" ::: "+longitude);
+                    Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
+                }else{
+                    gps.showSettingsAlert();
+                }
+            }
+
+        },0,1000);//Update text every second
 
         runtime_permission();
 
@@ -85,6 +114,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+//                gps = new GPS_Service(MainActivity.this,tim);
+//                startService(new Intent(MainActivity.this,GPS_Service.class));
+//
+//                if(gps.canGetLocation()){
+//                    double latitude = gps.getLatitude();
+//                    double longitude = gps.getLongitude();
+//                    mylatitude = latitude;
+//                    mylongitude = longitude;
+//                    storeInDatabase(latitude,longitude);
+//                    mText.setText(latitude+" ::: "+longitude);
+//                    Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
+//                }else{
+//                    gps.showSettingsAlert();
+//                }
+
 
     private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
         double percentage;
@@ -126,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode==123){
             runtime_permission();
+
         }
     }
 }
