@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +75,15 @@ public class MainActivity extends AppCompatActivity {
         runtime_permission();
 
         listenForPartner("MyPartner");
+
+        Button button = (Button) findViewById(R.id.start_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String userName = ((EditText)findViewById(R.id.userName_textEdit)).getText().toString();
+                String partnerName = ((EditText)findViewById(R.id.partnerName_textEdit)).getText().toString();
+                System.out.println(userName + partnerName);
+            }
+        });
     }
 
     private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
