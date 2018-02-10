@@ -9,36 +9,19 @@ android:layout_height="match_parent"
 tools:context="systems.lightspeed.love_a_thon_app.MainActivity">
 
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    android:padding="10dp"
-    android:layout_centerHorizontal="true"
-    android:textSize="17sp"
-    android:id="@+id/welcome_tv"
-    android:textColor="#000"
-    android:text="Welcome to Location Demo!"/>
+    <TextView
+        android:id="@+id/welcome_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:text="Lit AF"
+        android:textColor="#000"
+        android:textSize="17sp" />
 
 
-<Spinner
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/welcome_tv"
-    android:id="@+id/spinner_time"
-    android:layout_margin="10dp"
-    ></Spinner>
-
-<Button
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/spinner_time"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="20dp"
-    android:text="Show Location"
-    android:id="@+id/location_btn"
-    android:textAllCaps="true"/>
-<TextView
+    <TextView
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     android:text="Location"
