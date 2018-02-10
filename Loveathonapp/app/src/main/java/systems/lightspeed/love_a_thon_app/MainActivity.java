@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     double partnerLongitude;
     double partnerLatitude;
+    double mylongitude;
+    double mylatitude;
 
     //Firebase Work
     DatabaseReference mDatabaseLocationDetails;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.hasChild("longitude") && dataSnapshot.hasChild("latitude")) {
                     partnerLongitude = dataSnapshot.child("longitude").getValue(Double.class);
                     partnerLatitude = dataSnapshot.child("latitude").getValue(Double.class);
-                    System.out.println("got partner location: " + partnerLongitude + ", " + partnerLatitude);
+                    System.out.println("distance: "+ distPercentage(mylatitude, mylongitude, partnerLatitude, partnerLongitude));
                 }else {
                     System.err.println("couldnt get partner location, keys were missing");
                 }
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
                 if(gps.canGetLocation()){
                     double latitude = gps.getLatitude();
                     double longitude = gps.getLongitude();
+                    mylatitude = latitude;
+                    mylongitude = longitude;
                     storeInDatabase(latitude,longitude);
                     mText.setText(latitude+" ::: "+longitude);
                     Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
