@@ -31,9 +31,6 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    String timer[]={"Select time","5 sec","10 sec","15 sec","20 sec","30 sec"};
-    String tim;
-    Button mLocationBtn;
     TextView mText;
     GPS_Service gps;
 
@@ -75,63 +72,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mText = (TextView) findViewById(R.id.location_tv);
-        Spinner mSpinTime= (Spinner) findViewById(R.id.spinner_time);
-        mLocationBtn= (Button) findViewById(R.id.location_btn);
         mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child("User 1");
-
-//      permission check
-        if(!runtime_permission())
-         //   enable_button();
-        runtime_permission();
-
-        listenForPartner("MyPartner");
-
-        mSpinTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-                tim= adapterView.getItemAtPosition(i).toString();
-                if(tim.equals("Select time")){
-                    Toast.makeText(MainActivity.this, "Please Select time!", Toast.LENGTH_SHORT).show();
-                }
-                if(tim=="5 sec"){
-                    tim= String.valueOf(tim.charAt(0));
-                    Toast.makeText(MainActivity.this, tim+"", Toast.LENGTH_SHORT).show();
-                }
-                if(tim=="10 sec"){
-                    tim= tim.substring(0,2);
-                    Toast.makeText(MainActivity.this, tim+"", Toast.LENGTH_SHORT).show();
-                }if(tim=="15 sec"){
-                    tim= tim.substring(0,2);
-                    Toast.makeText(MainActivity.this, tim+"", Toast.LENGTH_SHORT).show();
-                }if(tim=="20 sec"){
-                    tim= tim.substring(0,2);
-                    Toast.makeText(MainActivity.this, tim+"", Toast.LENGTH_SHORT).show();
-                }if(tim=="30 sec"){
-                    tim= tim.substring(0,2);
-                    Toast.makeText(MainActivity.this, tim+"", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                tim= String.valueOf(0);
-            }
-        });
-
-        ArrayAdapter arrayAdapterCity = new ArrayAdapter(this,android.R.layout.simple_spinner_dropdown_item,timer);
-        arrayAdapterCity.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinTime.setAdapter(arrayAdapterCity);
-    //    updateDisplay();
     }
+
+
     private void updateDisplay() {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
 
             @Override
             public void run() {
-                 gps = new GPS_Service(MainActivity.this,tim);
+                 gps = new GPS_Service(MainActivity.this, "1");
                 startService(new Intent(MainActivity.this,GPS_Service.class));
 
                 if(gps.canGetLocation()){
@@ -148,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
         },0,1000);//Update text every second
+
+        runtime_permission();
+
+        listenForPartner("MyPartner");
     }
 //                gps = new GPS_Service(MainActivity.this,tim);
 //                startService(new Intent(MainActivity.this,GPS_Service.class));
@@ -204,12 +159,8 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode==123){
-            if(grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){
-              //  enable_button();
-             //   updateDisplay();
-            }else{
-                runtime_permission();
-            }
+            runtime_permission();
+
         }
     }
 }
