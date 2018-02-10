@@ -1,5 +1,6 @@
 package systems.lightspeed.love_a_thon_app;
 
+import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
        mText = (TextView) findViewById(R.id.location_tv);
         Spinner mSpinTime= (Spinner) findViewById(R.id.spinner_time);
         mLocationBtn= (Button) findViewById(R.id.location_btn);
-        mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").push();
+        mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child("User 1");
 
 //      permission check
         if(!runtime_permission())
@@ -113,6 +114,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
+        double percentage;
+        Location loc = new Location("");
+        loc.setLatitude(latitude);
+        loc.setLongitude(longitude);
+
+        Location partnerloc = new Location("");
+        partnerloc.setLatitude(partnerlat);
+        partnerloc.setLongitude(partnerlong);
+
+        percentage = loc.distanceTo(partnerloc);
+
+        percentage/=2;
+        percentage=1/percentage;
+        percentage*=100;
+        if(percentage >= 100) percentage = 100;
+        percentage = Math.abs(percentage);
+        return percentage;
     }
 
     private void storeInDatabase(double latitude, double longitude) {
