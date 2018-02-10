@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "772514281736",
+    "firebase_url": "https://love-a-thon-project.firebaseio.com",
+    "project_id": "love-a-thon-project",
+    "storage_bucket": "love-a-thon-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772514281736:android:7bf8e4a4664c2549",
+        "android_client_info": {
+          "package_name": "systems.lightspeed.love_a_thon_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "772514281736-h7armjhar20vsiapsiukkpl3asdq0hlo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYEiRkw7iwg8tnkuOctnjOxwU4wov_Lks"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
