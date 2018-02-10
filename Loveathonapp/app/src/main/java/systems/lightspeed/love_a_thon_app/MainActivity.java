@@ -30,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity{
 
     TextView mText;
     GPS_Service gps;
@@ -73,9 +73,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         mText = (TextView) findViewById(R.id.location_tv);
-
-        Button button = (Button) findViewById(R.id.start_button);
-        button.setOnClickListener(this);
     }
 
 
@@ -165,16 +162,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             runtime_permission();
 
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-        String userName = ((EditText)findViewById(R.id.userName_textEdit)).getText().toString();
-        String partnerName = ((EditText)findViewById(R.id.partnerName_textEdit)).getText().toString();
-        System.out.println(userName + partnerName);
-
-        mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child(userName);
-        updateDisplay();
-        listenForPartner(partnerName);
     }
 }
