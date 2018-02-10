@@ -39,12 +39,13 @@ public class MainActivity extends AppCompatActivity{
     double partnerLatitude;
     double mylongitude;
     double mylatitude;
+    String username, partnerName;
 
     //Firebase Work
     DatabaseReference mDatabaseLocationDetails;
     DatabaseReference partnerLocationDetails;
 
-    private void listenForPartner(String partnerName) {
+    private void listenForPartner() {
         partnerLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child(partnerName);
         partnerLocationDetails.addValueEventListener(new ValueEventListener() {
             @Override
@@ -71,7 +72,11 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            partnerName = extras.getString("partner");
+            username = extras.getString("user");
+        }
         mText = (TextView) findViewById(R.id.location_tv);
     }
 
@@ -102,7 +107,7 @@ public class MainActivity extends AppCompatActivity{
 
         runtime_permission();
 
-        listenForPartner("MyPartner");
+        listenForPartner();
     }
 //                gps = new GPS_Service(MainActivity.this,tim);
 //                startService(new Intent(MainActivity.this,GPS_Service.class));

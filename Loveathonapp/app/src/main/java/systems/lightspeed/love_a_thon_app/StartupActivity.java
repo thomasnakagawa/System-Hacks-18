@@ -1,5 +1,6 @@
 package systems.lightspeed.love_a_thon_app;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -24,5 +25,11 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
         String userName = ((EditText)findViewById(R.id.userName_textEdit)).getText().toString();
         String partnerName = ((EditText)findViewById(R.id.partnerName_textEdit)).getText().toString();
         System.out.println(userName + partnerName);
+
+        Intent i= new Intent("MainActivity");
+        i.putExtra("user",userName);
+        i.putExtra("partner",partnerName);
+
+        startActivity(i);
     }
 }
