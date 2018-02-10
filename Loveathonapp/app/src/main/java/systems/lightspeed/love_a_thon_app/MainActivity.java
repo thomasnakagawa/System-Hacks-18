@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void run() {
-                 gps = new GPS_Service(getApplicationContext(), "1");
+                gps = new GPS_Service(getApplicationContext(), "1");
                 startService(new Intent(getApplicationContext(),GPS_Service.class));
 
                 if(gps.canGetLocation()){
@@ -91,10 +91,8 @@ public class MainActivity extends AppCompatActivity{
                     mylatitude = latitude;
                     mylongitude = longitude;
                     storeInDatabase(latitude,longitude);
-                    //mText.setText(latitude+" ::: "+longitude);
-                    //Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
                 }else{
-                 //   gps.showSettingsAlert();
+                    System.err.println("Cannot get GPS location");
                 }
             }
 
@@ -104,21 +102,6 @@ public class MainActivity extends AppCompatActivity{
 
         listenForPartner("MyPartner");
     }
-//                gps = new GPS_Service(MainActivity.this,tim);
-//                startService(new Intent(MainActivity.this,GPS_Service.class));
-//
-//                if(gps.canGetLocation()){
-//                    double latitude = gps.getLatitude();
-//                    double longitude = gps.getLongitude();
-//                    mylatitude = latitude;
-//                    mylongitude = longitude;
-//                    storeInDatabase(latitude,longitude);
-//                    mText.setText(latitude+" ::: "+longitude);
-//                    Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
-//                }else{
-//                    gps.showSettingsAlert();
-//                }
-
 
     private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
         double percentage;
@@ -133,6 +116,12 @@ public class MainActivity extends AppCompatActivity{
         percentage = loc.distanceTo(partnerloc);
 
         percentage/=2;
+
+        // prevent divide by zero
+        if (percentage == 0.0) {
+            return 0.0;
+        }
+
         percentage=1/percentage;
         percentage*=100;
         if(percentage >= 100) percentage = 100;
