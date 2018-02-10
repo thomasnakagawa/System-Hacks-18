@@ -19,8 +19,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,17 +33,41 @@ public class MainActivity extends AppCompatActivity {
     TextView mText;
     GPS_Service gps;
 
+    double partnerLongitude;
+    double partnerLatitude;
+
     //Firebase Work
     DatabaseReference mDatabaseLocationDetails;
+    DatabaseReference partnerLocationDetails;
+
+    private void listenForPartner(String partnerName) {
+        partnerLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child(partnerName);
+        partnerLocationDetails.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild("longitude") && dataSnapshot.hasChild("latitude")) {
+                    partnerLongitude = dataSnapshot.child("longitude").getValue(Double.class);
+                    partnerLatitude = dataSnapshot.child("latitude").getValue(Double.class);
+                    System.out.println("got partner location: " + partnerLongitude + ", " + partnerLatitude);
+                }else {
+                    System.err.println("couldnt get partner location, keys were missing");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-       mText = (TextView) findViewById(R.id.location_tv);
+        mText = (TextView) findViewById(R.id.location_tv);
         Spinner mSpinTime= (Spinner) findViewById(R.id.spinner_time);
         mLocationBtn= (Button) findViewById(R.id.location_btn);
         mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").push();
@@ -50,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             enable_button();
         runtime_permission();
 
+        listenForPartner("MyPartner");
 
         mSpinTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -116,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void storeInDatabase(double latitude, double longitude) {
-
-
         mDatabaseLocationDetails.child("longitude").setValue(longitude);
         mDatabaseLocationDetails.child("latitude").setValue(latitude);
     }
