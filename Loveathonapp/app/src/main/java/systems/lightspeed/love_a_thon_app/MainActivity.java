@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity{
                 if (dataSnapshot.hasChild("longitude") && dataSnapshot.hasChild("latitude")) {
                     partnerLongitude = dataSnapshot.child("longitude").getValue(Double.class);
                     partnerLatitude = dataSnapshot.child("latitude").getValue(Double.class);
-                    System.out.println("distance: "+ distPercentage(mylatitude, mylongitude, partnerLatitude, partnerLongitude));
+                    System.out.println("distance: "+ distance(mylatitude, mylongitude, partnerLatitude, partnerLongitude));
                 }else {
                     System.err.println("couldnt get partner location, keys were missing");
                 }
@@ -84,10 +84,7 @@ public class MainActivity extends AppCompatActivity{
 
         }
         mText = (TextView) findViewById(R.id.location_tv);
-    }
-    @Override
-    protected void onStart(){
-        super.onStart();
+
         updateDisplay();
     }
 
@@ -116,6 +113,20 @@ public class MainActivity extends AppCompatActivity{
         listenForPartner();
     }
 
+
+    private double distance(double latitude,  double longitude, double partnerlat, double partnerlong){
+        double dist;
+        Location loc = new Location("");
+        loc.setLatitude(latitude);
+        loc.setLongitude(longitude);
+
+        Location partnerloc = new Location("");
+        partnerloc.setLatitude(partnerlat);
+        partnerloc.setLongitude(partnerlong);
+
+        dist = loc.distanceTo(partnerloc);
+        return dist;
+    }
     private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
         double percentage;
         Location loc = new Location("");

@@ -28,7 +28,7 @@ dependencies {
     compile 'com.google.firebase:firebase-core:11.8.0'
     compile 'com.google.firebase:firebase-database:11.8.0'
     compile 'com.github.lzyzsd:circleprogress:1.2.1'
-    implementation files('C:/Users/Yagnik/Desktop/Git/SystemHack/App/System-Hacks-18/Loveathonapp/classes.jar')
+    implementation files('../classes.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'
