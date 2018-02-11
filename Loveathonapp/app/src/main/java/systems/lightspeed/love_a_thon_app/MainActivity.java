@@ -99,11 +99,11 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void run() {
-
                 if(gps.canGetLocation()) {
                     mylatitude = gps.getLatitude();
                     mylongitude = gps.getLongitude();
                     storeInDatabase(mylatitude, mylongitude);
+
                 }
             }
 
@@ -127,6 +127,12 @@ public class MainActivity extends AppCompatActivity{
         percentage = loc.distanceTo(partnerloc);
 
         percentage/=2;
+
+        // prevent divide by zero
+        if (percentage == 0.0) {
+            return 0.0;
+        }
+
         percentage=1/percentage;
         percentage*=100;
         if(percentage >= 100) percentage = 100;
