@@ -235,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         counter = 0;
                     }else {
                         counter--;
+                    }
 
                 }
 
