@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/love"
     tools:context="systems.lightspeed.love_a_thon_app.StartupActivity">
 
     <TextView

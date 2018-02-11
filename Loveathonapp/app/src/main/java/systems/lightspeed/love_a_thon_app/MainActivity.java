@@ -57,12 +57,13 @@ public class MainActivity extends AppCompatActivity{
                     partnerLongitude = dataSnapshot.child("longitude").getValue(Double.class);
                     partnerLatitude = dataSnapshot.child("latitude").getValue(Double.class);
                     System.out.println("distance: "+ distance(mylatitude, mylongitude, partnerLatitude, partnerLongitude));
+                    TextView data = (TextView)findViewById(R.id.data);
+                    data.setText("distance: "+ distance(mylatitude, mylongitude, partnerLatitude, partnerLongitude));
                 }else {
                     System.err.println("couldnt get partner location, keys were missing");
                 }
 
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity{
                     mylatitude = gps.getLatitude();
                     mylongitude = gps.getLongitude();
                     storeInDatabase(mylatitude, mylongitude);
-                    System.out.println("HEREHRE");
+                   // System.out.println("After: "+ distance(mylatitude, mylongitude, partnerLatitude, partnerLongitude));
                 }
                 handler.postDelayed(this, 1000);
             }
