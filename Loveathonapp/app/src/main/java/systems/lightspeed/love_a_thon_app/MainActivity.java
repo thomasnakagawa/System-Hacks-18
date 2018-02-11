@@ -1,6 +1,10 @@
 package systems.lightspeed.love_a_thon_app;
 
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -30,10 +34,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements SensorEventListener{
 
     TextView mText;
     GPS_Service gps;
@@ -43,20 +48,22 @@ public class MainActivity extends AppCompatActivity{
     double mylongitude;
     double mylatitude;
     String username, partnerName;
+    SensorManager mySensorManager;
+    double mypitch, percent;
 
     //Firebase Work
     DatabaseReference mDatabaseLocationDetails;
     DatabaseReference partnerLocationDetails;
 
     private void listenForPartner() {
-        partnerLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child(partnerName);
+        partnerLocationDetails = FirebaseDatabase.getInstance().getReference().child("Direction_Details").child(partnerName);
         partnerLocationDetails.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild("longitude") && dataSnapshot.hasChild("latitude")) {
-                    partnerLongitude = dataSnapshot.child("longitude").getValue(Double.class);
-                    partnerLatitude = dataSnapshot.child("latitude").getValue(Double.class);
-                    System.out.println("distance: "+ distance(mylatitude, mylongitude, partnerLatitude, partnerLongitude));
+                if (dataSnapshot.hasChild("azimuth")) {
+                    percent = distPercentage(mypitch, dataSnapshot.child("azimuth").getValue(Double.class));
+                    if(percent >= 90)
+                        System.out.println("facing~~~~~~~~~~~~");
                 }else {
                     System.err.println("couldnt get partner location, keys were missing");
                 }
@@ -80,82 +87,38 @@ public class MainActivity extends AppCompatActivity{
         if (extras != null) {
             partnerName = extras.getString("partner");
             username = extras.getString("user");
-            mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child(username);
+            mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Direction_Details").child(username);
 
         }
         mText = (TextView) findViewById(R.id.location_tv);
+        mySensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        Sensor mySensors = mySensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        mySensorManager.registerListener(this, mySensors, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+        double distance(double srcLat, double srcLng, double desLat, double desLng) {
+        double earthRadius = 3958.75;
+        double dLat = Math.toRadians(desLat - srcLat);
+        double dLng = Math.toRadians(desLng - srcLng);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(srcLat))
+                * Math.cos(Math.toRadians(desLat)) * Math.sin(dLng / 2)
+                * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double dist = earthRadius * c;
 
-        updateDisplay();
+        double meterConversion = 1609;
+
+        return (dist * meterConversion);
     }
 
-
-    private void updateDisplay() {
-        Timer timer = new Timer();
-        gps = new GPS_Service(mContext);
-        startService(new Intent(mContext,GPS_Service.class));
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(gps.canGetLocation()) {
-                    mylatitude = gps.getLatitude();
-                    mylongitude = gps.getLongitude();
-                    storeInDatabase(mylatitude, mylongitude);
-                    System.out.println("HEREHRE");
-                }
-                handler.postDelayed(this, 1000);
-            }
-        }, 1000);
-
-        runtime_permission();
-
-        listenForPartner();
-    }
-
-
-    private double distance(double latitude,  double longitude, double partnerlat, double partnerlong){
-        double dist;
-        Location loc = new Location("");
-        loc.setLatitude(latitude);
-        loc.setLongitude(longitude);
-
-        Location partnerloc = new Location("");
-        partnerloc.setLatitude(partnerlat);
-        partnerloc.setLongitude(partnerlong);
-
-        dist = loc.distanceTo(partnerloc);
-        return dist;
-    }
-    private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
+    private double distPercentage(double a1, double a2){
         double percentage;
-        Location loc = new Location("");
-        loc.setLatitude(latitude);
-        loc.setLongitude(longitude);
-
-        Location partnerloc = new Location("");
-        partnerloc.setLatitude(partnerlat);
-        partnerloc.setLongitude(partnerlong);
-
-        percentage = loc.distanceTo(partnerloc);
-
-        percentage/=2;
-
-        // prevent divide by zero
-        if (percentage == 0.0) {
-            return 0.0;
-        }
-
-        percentage=1/percentage;
-        percentage*=100;
-        if(percentage >= 100) percentage = 100;
-        percentage = Math.abs(percentage);
+        percentage = (Math.abs(a1 - a2)/180) * 100;
         return percentage;
     }
 
-    private void storeInDatabase(double latitude, double longitude) {
-        mDatabaseLocationDetails.child("longitude").setValue(longitude);
-        mDatabaseLocationDetails.child("latitude").setValue(latitude);
+    private void storeInDatabase(double azimuth) {
+        mDatabaseLocationDetails.child("azimuth").setValue(azimuth);
     }
 
     private boolean runtime_permission() {
@@ -175,5 +138,23 @@ public class MainActivity extends AppCompatActivity{
             runtime_permission();
 
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        //device heading in degrees
+        double x = sensorEvent.values[0];
+        double y = sensorEvent.values[1];
+        double z = sensorEvent.values[2];
+
+        //convert radians into degrees
+        double pitch = x;
+        storeInDatabase(pitch);
+        mypitch = pitch;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }
