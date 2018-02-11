@@ -2,6 +2,7 @@ package systems.lightspeed.love_a_thon_app;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -95,19 +96,20 @@ public class MainActivity extends AppCompatActivity{
         Timer timer = new Timer();
         gps = new GPS_Service(mContext);
         startService(new Intent(mContext,GPS_Service.class));
-        timer.schedule(new TimerTask() {
 
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(gps.canGetLocation()) {
                     mylatitude = gps.getLatitude();
                     mylongitude = gps.getLongitude();
                     storeInDatabase(mylatitude, mylongitude);
-
+                    System.out.println("HEREHRE");
                 }
+                handler.postDelayed(this, 1000);
             }
-
-        },0,1000);//Update text every second
+        }, 1000);
 
         runtime_permission();
 
