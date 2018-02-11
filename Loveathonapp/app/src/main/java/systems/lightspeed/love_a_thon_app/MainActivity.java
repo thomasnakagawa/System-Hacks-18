@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         handler.postDelayed(new Runnable(){
             public void run(){
-
+                System.out.println("percent : " + percent + " Counter: "+ counter);
                 if (percent > 0 && percent < 80){
                     if(counter >= 3){
                         counter = 3;
@@ -237,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     }
 
                 }
-
 
                 if(counter == 0){
                     onClickSend("1");
