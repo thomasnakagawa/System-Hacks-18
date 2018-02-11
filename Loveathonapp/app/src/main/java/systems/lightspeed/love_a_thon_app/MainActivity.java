@@ -145,41 +145,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    public void onSendData(View view){
-//        handler.postDelayed(new Runnable(){
-//            public void run(){
-//
-//
-//                handler.postDelayed(this, delay);
-//            }
-//        }, delay);
-
-
-        System.out.println("percent : " + percent + " Counter: "+ counter);
-        if (percent > 0 && percent < 80){
-            if(counter >= 3){
-                counter = 3;
-            }else {
-                counter++;
-            }
-
-        }else{
-            if (counter <= 0){
-                counter = 0;
-            }else {
-                counter--;
-            }
-
-        }
-
-        if(counter == 0){
-            onClickSend("1");
-        }else if(counter == 1){
-            onClickSend("2");
-        }else if (counter == 2){
-            onClickSend("3");
-        }
-    }
 
     UsbSerialInterface.UsbReadCallback mCallback = new UsbSerialInterface.UsbReadCallback() { //Defining a Callback which triggers whenever data is read.
         @Override
@@ -255,7 +220,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     break;
             }
         }
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                System.out.println("percent : " + percent + " Counter: "+ counter);
+                if (percent > 0 && percent < 80){
+                    if(counter >= 3){
+                        counter = 3;
+                    }else {
+                        counter++;
+                    }
 
+                }else{
+                    if (counter <= 0){
+                        counter = 0;
+                    }else {
+                        counter--;
+
+                }
+
+                if(counter == 0){
+                    onClickSend("1");
+                }else if(counter == 1){
+                    onClickSend("2");
+                }else if (counter == 2){
+                    onClickSend("3");
+                }
+
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
 
 
     }
