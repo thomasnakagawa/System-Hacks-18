@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("azimuth")) {
                     percent = distPercentage(mypitch, dataSnapshot.child("azimuth").getValue(Double.class));
-                    if(percent >= 90)
+                    if(percent >= 80.00)
                         System.out.println("facing~~~~~~~~~~~~");
                 }else {
                     System.err.println("couldnt get partner location, keys were missing");
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mySensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         Sensor mySensors = mySensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mySensorManager.registerListener(this, mySensors, SensorManager.SENSOR_DELAY_NORMAL);
+        listenForPartner();
     }
         double distance(double srcLat, double srcLng, double desLat, double desLng) {
         double earthRadius = 3958.75;
