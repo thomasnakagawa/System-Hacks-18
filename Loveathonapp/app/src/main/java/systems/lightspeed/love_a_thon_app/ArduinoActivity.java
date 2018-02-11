@@ -25,15 +25,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.os.Handler;
-
 public class ArduinoActivity extends AppCompatActivity {
 
-    Handler handler = new Handler();
-    int delay = 5000; //milliseconds
-    int counter = 0;
     public final String ACTION_USB_PERMISSION = "systems.lightspeed.love_a_thon_app.USB_PERMISSION";
-
+    Button startButton, sendButton, clearButton, stopButton;
+    TextView textView;
+    EditText editText;
     UsbManager usbManager;
     UsbDevice device;
     UsbSerialDevice serialPort;
@@ -44,15 +41,20 @@ public class ArduinoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arduino);
         usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
-
+        startButton = (Button) findViewById(R.id.buttonStart);
+        sendButton = (Button) findViewById(R.id.buttonSend);
+        clearButton = (Button) findViewById(R.id.buttonClear);
+        stopButton = (Button) findViewById(R.id.buttonStop);
+        editText = (EditText) findViewById(R.id.editText);
+        textView = (TextView) findViewById(R.id.textView);
+        setUiEnabled(false);
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         registerReceiver(broadcastReceiver, filter);
-
-
     }
+
 
 
     UsbSerialInterface.UsbReadCallback mCallback = new UsbSerialInterface.UsbReadCallback() { //Defining a Callback which triggers whenever data is read.
@@ -62,9 +64,11 @@ public class ArduinoActivity extends AppCompatActivity {
             try {
                 data = new String(arg0, "UTF-8");
                 data.concat("/n");
+                tvAppend(textView, data);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+
 
         }
     };
@@ -78,13 +82,14 @@ public class ArduinoActivity extends AppCompatActivity {
                     serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection);
                     if (serialPort != null) {
                         if (serialPort.open()) { //Set Serial Connection Parameters.
-
+                            setUiEnabled(true);
                             serialPort.setBaudRate(9600);
                             serialPort.setDataBits(UsbSerialInterface.DATA_BITS_8);
                             serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1);
                             serialPort.setParity(UsbSerialInterface.PARITY_NONE);
                             serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
                             serialPort.read(mCallback);
+                            tvAppend(textView,"Serial Connection Opened!\n");
 
                         } else {
                             Log.d("SERIAL", "PORT NOT OPEN");
@@ -96,9 +101,10 @@ public class ArduinoActivity extends AppCompatActivity {
                     Log.d("SERIAL", "PERM NOT GRANTED");
                 }
             } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                onClickStart();
+                onClickStart(startButton);
             } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                onClickStop();
+                onClickStop(stopButton);
+
             }
         }
 
@@ -107,7 +113,15 @@ public class ArduinoActivity extends AppCompatActivity {
 
 
 
-    public void onClickStart() {
+    public void setUiEnabled(boolean bool) {
+        startButton.setEnabled(!bool);
+        sendButton.setEnabled(bool);
+        stopButton.setEnabled(bool);
+        textView.setEnabled(bool);
+
+    }
+
+    public void onClickStart(View view) {
 
         HashMap<String, UsbDevice> usbDevices = usbManager.getDeviceList();
         if (!usbDevices.isEmpty()) {
@@ -129,41 +143,38 @@ public class ArduinoActivity extends AppCompatActivity {
                     break;
             }
         }
-        handler.postDelayed(new Runnable(){
-            public void run(){
-
-                if(counter == 0){
-                    onClickSend("1");
-                }else if(counter ==1){
-                    onClickSend("2");
-                }else if (counter == 2){
-                    onClickSend("3");
-                }else if (counter == 3){
-                    onClickSend("2");
-                }
-                else if (counter == 4){
-                    onClickSend("1");
-                }
-
-                counter++;
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
 
 
     }
 
-    public void onClickSend(String data) {
-        String string = data;
+    public void onClickSend(View view) {
+        String string = editText.getText().toString();
         serialPort.write(string.getBytes());
+        tvAppend(textView, "\nData Sent : " + string + "\n");
 
     }
 
 
-    public void onClickStop() {
+    public void onClickStop(View view) {
+        setUiEnabled(false);
         serialPort.close();
+        tvAppend(textView,"\nSerial Connection Closed! \n");
+
+    }
+    public void onClickClear(View view) {
+        textView.setText(" ");
     }
 
+    private void tvAppend(TextView tv, CharSequence text) {
+        final TextView ftv = tv;
+        final CharSequence ftext = text;
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ftv.append(ftext);
+            }
+        });
+    }
 
 }

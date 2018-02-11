@@ -220,36 +220,36 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     break;
             }
         }
-        handler.postDelayed(new Runnable(){
-            public void run(){
-                System.out.println("percent : " + percent + " Counter: "+ counter);
-                if (percent > 0 && percent < 80){
-                    if(counter >= 3){
-                        counter = 3;
-                    }else {
-                        counter++;
-                    }
-
-                }else{
-                    if (counter <= 0){
-                        counter = 0;
-                    }else {
-                        counter--;
-                    }
-
-                }
-
-                if(counter == 0){
-                    onClickSend("1");
-                }else if(counter == 1){
-                    onClickSend("2");
-                }else if (counter == 2){
-                    onClickSend("3");
-                }
-
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
+//        handler.postDelayed(new Runnable(){
+//            public void run(){
+//                System.out.println("percent : " + percent + " Counter: "+ counter);
+//                if (percent > 0 && percent < 80){
+//                    if(counter >= 3){
+//                        counter = 3;
+//                    }else {
+//                        counter++;
+//                    }
+//
+//                }else{
+//                    if (counter <= 0){
+//                        counter = 0;
+//                    }else {
+//                        counter--;
+//                    }
+//
+//                }
+//
+//                if(counter == 0){
+//                    onClickSend("1");
+//                }else if(counter == 1){
+//                    onClickSend("2");
+//                }else if (counter == 2){
+//                    onClickSend("3");
+//                }
+//
+//                handler.postDelayed(this, delay);
+//            }
+//        }, delay);
 
 
     }
@@ -326,5 +326,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    public void onSendData(View view){
+        Intent i= new Intent(MainActivity.this, ArduinoActivity.class);
+
+        startActivity(i);
     }
 }
