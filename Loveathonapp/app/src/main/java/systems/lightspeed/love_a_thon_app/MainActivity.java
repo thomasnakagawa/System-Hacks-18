@@ -1,5 +1,6 @@
 package systems.lightspeed.love_a_thon_app;
 
+import android.content.Context;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity{
 
     TextView mText;
     GPS_Service gps;
-
+    Context mContext;
     double partnerLongitude;
     double partnerLatitude;
     double mylongitude;
@@ -72,34 +74,36 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = getApplicationContext();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             partnerName = extras.getString("partner");
             username = extras.getString("user");
+            mDatabaseLocationDetails = FirebaseDatabase.getInstance().getReference().child("Location_Details").child(username);
+
         }
         mText = (TextView) findViewById(R.id.location_tv);
+    }
+    @Override
+    protected void onStart(){
+        super.onStart();
+        updateDisplay();
     }
 
 
     private void updateDisplay() {
         Timer timer = new Timer();
+        gps = new GPS_Service(mContext);
+        startService(new Intent(mContext,GPS_Service.class));
         timer.schedule(new TimerTask() {
 
             @Override
             public void run() {
-                 gps = new GPS_Service(getApplicationContext(), "1");
-                startService(new Intent(getApplicationContext(),GPS_Service.class));
 
-                if(gps.canGetLocation()){
-                    double latitude = gps.getLatitude();
-                    double longitude = gps.getLongitude();
-                    mylatitude = latitude;
-                    mylongitude = longitude;
-                    storeInDatabase(latitude,longitude);
-                    //mText.setText(latitude+" ::: "+longitude);
-                    //Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
-                }else{
-                 //   gps.showSettingsAlert();
+                if(gps.canGetLocation()) {
+                    mylatitude = gps.getLatitude();
+                    mylongitude = gps.getLongitude();
+                    storeInDatabase(mylatitude, mylongitude);
                 }
             }
 
@@ -109,21 +113,6 @@ public class MainActivity extends AppCompatActivity{
 
         listenForPartner();
     }
-//                gps = new GPS_Service(MainActivity.this,tim);
-//                startService(new Intent(MainActivity.this,GPS_Service.class));
-//
-//                if(gps.canGetLocation()){
-//                    double latitude = gps.getLatitude();
-//                    double longitude = gps.getLongitude();
-//                    mylatitude = latitude;
-//                    mylongitude = longitude;
-//                    storeInDatabase(latitude,longitude);
-//                    mText.setText(latitude+" ::: "+longitude);
-//                    Toast.makeText(MainActivity.this, latitude+" ::: "+ longitude, Toast.LENGTH_SHORT).show();
-//                }else{
-//                    gps.showSettingsAlert();
-//                }
-
 
     private double distPercentage(double latitude,  double longitude, double partnerlat, double partnerlong){
         double percentage;

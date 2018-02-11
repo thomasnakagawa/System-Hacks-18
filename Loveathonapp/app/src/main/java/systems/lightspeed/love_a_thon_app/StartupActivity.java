@@ -26,7 +26,7 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
         String partnerName = ((EditText)findViewById(R.id.partnerName_textEdit)).getText().toString();
         System.out.println(userName + partnerName);
 
-        Intent i= new Intent("MainActivity");
+        Intent i= new Intent(StartupActivity.this, MainActivity.class);
         i.putExtra("user",userName);
         i.putExtra("partner",partnerName);
 

@@ -30,16 +30,13 @@ public class GPS_Service extends Service implements LocationListener{
     double latitude;//Latitude
     double longitude;//Longitude
 
-    // The minimum time between updates in milliseconds
-    static int time;
-    private static final long MIN_TIME_BW_UPDATES = 1000 * time;
 
     // Declaring a Location Manager
     protected LocationManager mlocationManager;
 
     public GPS_Service(){
     }
-    public GPS_Service(Context mContext, String time){
+    public GPS_Service(Context mContext){
         this.mContext=mContext;
         getLocation();
     }
@@ -70,7 +67,7 @@ public class GPS_Service extends Service implements LocationListener{
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
                     //noinspection MissingPermission
-                    mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, 0, this, Looper.getMainLooper() );
+                    mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this, Looper.getMainLooper() );
                     Log.d("Network", "Network");
                     if (mlocationManager != null) {
                         //noinspection MissingPermission
@@ -85,7 +82,7 @@ public class GPS_Service extends Service implements LocationListener{
                 if (isGPSEnabled) {
                     if (location == null) {
                         //noinspection MissingPermission
-                        mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, 0, this);
+                        mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 0, this);
                         Log.d("GPS Enabled", "GPS Enabled");
                         if (mlocationManager != null) {
                             //noinspection MissingPermission
